@@ -1,12 +1,12 @@
-const analyze = require('rollup-plugin-analyzer');
-const cleanup = require('rollup-plugin-cleanup');
-const json = require('@rollup/plugin-json');
-const resolve = require('@rollup/plugin-node-resolve').default;
-const terser = require('rollup-plugin-terser').terser;
-const pkg = require('./package.json');
+const analyze = require("rollup-plugin-analyzer");
+const cleanup = require("rollup-plugin-cleanup");
+const json = require("@rollup/plugin-json");
+const resolve = require("@rollup/plugin-node-resolve").default;
+const terser = require("rollup-plugin-terser").terser;
+const pkg = require("./package.json");
 
-const input = 'src/index.js';
-const inputESM = 'src/index.esm.js';
+const input = "src/index.js";
+const inputESM = "src/index.esm.js";
 
 const banner = `/*!
  * ${pkg.name} v${pkg.version}
@@ -15,6 +15,12 @@ const banner = `/*!
  * Released under the ${pkg.license} license
  */`;
 
+const getName = () => {
+  const nameParts = pkg.name.split("/");
+
+  return nameParts.length >= 2 ? nameParts[nameParts.length - 1] : pkg.name;
+};
+
 module.exports = [
   {
     input,
@@ -22,25 +28,22 @@ module.exports = [
       json(),
       resolve(),
       cleanup({
-        sourcemap: true
+        sourcemap: true,
       }),
-      analyze({summaryOnly: true})
+      analyze({ summaryOnly: true }),
     ],
     output: {
-      name: 'ChartStreaming',
-      file: `dist/${pkg.name}.js`,
+      name: "ChartStreaming",
+      file: `dist/${getName()}.js`,
       banner,
-      format: 'umd',
+      format: "umd",
       indent: false,
       globals: {
-        'chart.js': 'Chart',
-        'chart.js/helpers': 'Chart.helpers'
-      }
+        "chart.js": "Chart",
+        "chart.js/helpers": "Chart.helpers",
+      },
     },
-    external: [
-      'chart.js',
-      'chart.js/helpers'
-    ]
+    external: ["chart.js", "chart.js/helpers"],
   },
   {
     input,
@@ -49,24 +52,21 @@ module.exports = [
       resolve(),
       terser({
         output: {
-          preamble: banner
-        }
-      })
+          preamble: banner,
+        },
+      }),
     ],
     output: {
-      name: 'ChartStreaming',
-      file: `dist/${pkg.name}.min.js`,
-      format: 'umd',
+      name: "ChartStreaming",
+      file: `dist/${getName()}.min.js`,
+      format: "umd",
       indent: false,
       globals: {
-        'chart.js': 'Chart',
-        'chart.js/helpers': 'Chart.helpers'
-      }
+        "chart.js": "Chart",
+        "chart.js/helpers": "Chart.helpers",
+      },
     },
-    external: [
-      'chart.js',
-      'chart.js/helpers'
-    ]
+    external: ["chart.js", "chart.js/helpers"],
   },
   {
     input: inputESM,
@@ -74,18 +74,15 @@ module.exports = [
       json(),
       resolve(),
       cleanup({
-        sourcemap: true
+        sourcemap: true,
       }),
     ],
     output: {
       file: pkg.module,
       banner,
-      format: 'esm',
+      format: "esm",
       indent: false,
     },
-    external: [
-      'chart.js',
-      'chart.js/helpers'
-    ]
-  }
+    external: ["chart.js", "chart.js/helpers"],
+  },
 ];
